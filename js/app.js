@@ -9,52 +9,28 @@ var ShoppingCart = (function() {
       cartCheckoutEl = document.querySelector(".cart-checkout"),
       totalPriceEl = document.querySelector(".total-price");
 
-  // Fake JSON data array here should be API call
-  var products = [
-    {
-      id: 0,
-      name: "iPhone 6S",
-      description: "Kogi skateboard tattooed, whatever portland fingerstache coloring book mlkshk leggings flannel dreamcatcher.",
-      imageUrl: "http://www.icentar.me/phone/6s/images/goldbig.jpg",
-      price: 799
-    },
-    {
-      id: 1,
-      name: "iPhone 5S",
-      description: "Kogi skateboard tattooed, whatever portland fingerstache coloring book mlkshk leggings flannel dreamcatcher.",
-      imageUrl: "http://www.icentar.me/phone/5s/images/silverbig.png",
-      price: 349,
-    },
-    {
-      id: 2,
-      name: "Macbook",
-      description: "Kogi skateboard tattooed, whatever portland fingerstache coloring book mlkshk leggings flannel dreamcatcher.",
-      imageUrl: "http://www.icentar.me/mac/macbook/images/pro.jpg",
-      price: 1499
-    },
-    {
-      id: 3,
-      name: "Macbook Air",
-      description: "Kogi skateboard tattooed, whatever portland fingerstache coloring book mlkshk leggings flannel dreamcatcher.",
-      imageUrl: "http://www.icentar.me/mac/mbair/images/air.jpg",
-      price: 999
-    },
-    {
-      id: 4,
-      name: "Macbook Air 2013",
-      description: "Kogi skateboard tattooed, whatever portland fingerstache coloring book mlkshk leggings flannel dreamcatcher.",
-      imageUrl: "http://www.icentar.me/mac/mbair/images/air.jpg",
-      price: 599
-    },
-    {
-      id: 5,
-      name: "Macbook Air 2012",
-      description: "Kogi skateboard tattooed, whatever portland fingerstache coloring book mlkshk leggings flannel dreamcatcher.",
-      imageUrl: "http://www.icentar.me/mac/mbair/images/air.jpg",
-      price: 499
+
+  function getData() {
+    var data = new XMLHttpRequest();
+    data.open("GET", "js/data.json", true);
+    data.onload = function() {
+      if(data.status >= 200 && data.status < 400) {
+        products = JSON.parse(data.responseText);
+        generateProductList();
+      } else {
+        alert("Could not get the data!");
+      }
     }
-  ],
-      productsInCart = [];
+
+    data.onerror = function() {
+      alert("Error in communication with server!");
+    }
+
+    data.send();
+  }
+
+  var products = [];
+  var productsInCart = [];
 
   // Pretty much self explanatory function. NOTE: Here I have used template strings (ES6 Feature)
   var generateProductList = function() {
@@ -156,7 +132,7 @@ productsEl.appendChild(productEl);
 
   // This functon starts the whole application
   var init = function() {
-    generateProductList();
+    getData();
     setupListeners();
   }
 
