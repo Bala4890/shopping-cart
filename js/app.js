@@ -33,20 +33,24 @@ var ShoppingCart = (function() {
   }
 
   var setupListeners = function() {
-    productsEl.addEventListener("click", function(event) {
-      var el = event.target;
-      if(el.classList.contains("add-to-cart")) {
-       var elId = el.dataset.id;
-       addToCart(elId);
-      }
-    });
+    productsEl.addEventListener("click", addProductCallback);
 
-    emptyCartEl.addEventListener("click", function(event) {
-      if(confirm("Are you sure?")) {
+    emptyCartEl.addEventListener("click", emptyCartCallback);
+  }
+
+  var addProductCallback = function(event) {
+    var el = event.target;
+    if(el.classList.contains("add-to-cart")) {
+      var elId = el.dataset.id;
+      addToCart(elId);
+    }
+  }
+
+  var emptyCartCallback = function(event) {
+    if(confirm("Are you sure?")) {
         productsInCart = [];
-      }
-      generateCartList();
-    });
+    }
+    generateCartList();
   }
 
   // Pretty much self explanatory function. NOTE: Here I have used template strings (ES6 Feature)
