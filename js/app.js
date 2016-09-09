@@ -10,7 +10,10 @@ var ShoppingCart = (function() {
       totalPriceEl = document.querySelector(".total-price");
 
 
-  function getData() {
+  var products = [],
+      productsInCart = [];
+
+  var getData = function() {
     var data = new XMLHttpRequest();
     data.open("GET", "js/data.json", true);
     data.onload = function() {
@@ -29,15 +32,29 @@ var ShoppingCart = (function() {
     data.send();
   }
 
-  var products = [];
-  var productsInCart = [];
+  var setupListeners = function() {
+    productsEl.addEventListener("click", function(event) {
+      var el = event.target;
+      if(el.classList.contains("add-to-cart")) {
+       var elId = el.dataset.id;
+       addToCart(elId);
+      }
+    });
+
+    emptyCartEl.addEventListener("click", function(event) {
+      if(confirm("Are you sure?")) {
+        productsInCart = [];
+      }
+      generateCartList();
+    });
+  }
 
   // Pretty much self explanatory function. NOTE: Here I have used template strings (ES6 Feature)
   var generateProductList = function() {
     products.forEach(function(item) {
       var productEl = document.createElement("div");
       productEl.className = "product";
-      productEl.innerHTML = `<div class="product-image">
+      productEl.innerHTML = (`<div class="product-image">
                                 <img src="${item.imageUrl}" alt="${item.name}">
                              </div>
                              <div class="product-name"><span>Product:</span> ${item.name}</div>
@@ -47,10 +64,30 @@ var ShoppingCart = (function() {
                                <a href="#0" class="button see-more">More Details</a>
                                <a href="#0" class="button add-to-cart" data-id=${item.id}>Add to Cart</a>
                              </div>
-                          </div>
-`;
+                          </div>`);
 
-productsEl.appendChild(productEl);
+      productsEl.appendChild(productEl);
+    });
+  }
+
+    // Adds new items or updates existing one in productsInCart array
+  var addToCart = function(id) {
+    var obj = products[id];
+    if(productsInCart.length === 0 || productFound(obj.id) === undefined) {
+      productsInCart.push({product: obj, quantity: 1});
+    } else {
+      productsInCart.forEach(function(item) {
+        if(item.product.id === obj.id) {
+          item.quantity++;
+        }
+      });
+    }
+    generateCartList();
+  }
+
+  var productFound = function(productId) {
+    return productsInCart.find(function(item) {
+      return item.product.id === productId;
     });
   }
 
@@ -70,7 +107,6 @@ productsEl.appendChild(productEl);
     generateCartButtons()
   }
 
-
   // Function that generates Empty Cart and Checkout buttons based on condition that checks if productsInCart array is empty
   var generateCartButtons = function() {
     if(productsInCart.length > 0) {
@@ -81,47 +117,6 @@ productsEl.appendChild(productEl);
       emptyCartEl.style.display = "none";
       cartCheckoutEl.style.display = "none";
     }
-  }
-
-  // Setting up listeners for click event on all products and Empty Cart button as well
-  var setupListeners = function() {
-    productsEl.addEventListener("click", function(event) {
-      var el = event.target;
-      if(el.classList.contains("add-to-cart")) {
-       var elId = el.dataset.id;
-       addToCart(elId);
-      }
-    });
-
-    emptyCartEl.addEventListener("click", function(event) {
-      if(confirm("Are you sure?")) {
-        productsInCart = [];
-      }
-      generateCartList();
-    });
-  }
-
-  // Adds new items or updates existing one in productsInCart array
-  var addToCart = function(id) {
-    var obj = products[id];
-    if(productsInCart.length === 0 || productFound(obj.id) === undefined) {
-      productsInCart.push({product: obj, quantity: 1});
-    } else {
-      productsInCart.forEach(function(item) {
-        if(item.product.id === obj.id) {
-          item.quantity++;
-        }
-      });
-    }
-    generateCartList();
-  }
-
-
-  // This function checks if project is already in productsInCart array
-  var productFound = function(productId) {
-    return productsInCart.find(function(item) {
-      return item.product.id === productId;
-    });
   }
 
   var calculateTotalPrice = function() {

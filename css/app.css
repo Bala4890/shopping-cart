@@ -42,6 +42,7 @@ a {
 
 .header a:hover {
   font-weight: bold;
+  transition: 0.2s linear;
 }
 
 .header-logo {
@@ -84,6 +85,7 @@ a {
   display: block;
   max-width: 228px;
   width: 100%;
+  min-height: 270px;
   margin: 0 auto;
 }
 
